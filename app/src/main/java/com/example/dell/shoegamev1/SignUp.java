@@ -10,8 +10,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 
 
 import com.backendless.BackendlessUser;
@@ -22,12 +25,11 @@ import com.gdacciaro.iOSDialog.iOSDialogBuilder;
 import com.gdacciaro.iOSDialog.iOSDialogClickListener;
 import com.libizo.CustomEditText;
 
-import org.angmarch.views.NiceSpinner;
-import org.angmarch.views.OnSpinnerItemSelectedListener;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.LinkedList;
+
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ public class SignUp extends AppCompatActivity {
     CustomEditText firstNameET, lastNameET, eMailET, phoneET, passwordET;
     Button submitDetailsBtn;
     CheckBox staySignedInCheckBox, termsAndConditionsCheckBox;
-    NiceSpinner genderSpinner;
+    Spinner genderSpinner;
 
     //VARIABLES
     String firstName, lastName, eMail, phone, password;
@@ -70,11 +72,14 @@ public class SignUp extends AppCompatActivity {
 
 
         //set up gender options spinner
-        List<String> dataset = new LinkedList<>(Arrays.asList("Male", "Female"));
-        genderSpinner.attachDataSource(dataset);
-        genderSpinner.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener() {
+        List<String> genderSpinnerOptions = new ArrayList<>();
+        genderSpinnerOptions.add("Male");
+        genderSpinnerOptions.add("Female");
+        ArrayAdapter<String> genderSpinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genderSpinnerOptions);
+        genderSpinner.setAdapter(genderSpinnerAdapter);
+        genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(NiceSpinner parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 String genderString = (String) parent.getItemAtPosition(position);
 
@@ -88,6 +93,11 @@ public class SignUp extends AppCompatActivity {
 
                 }
 
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
@@ -175,7 +185,7 @@ public class SignUp extends AppCompatActivity {
 
                                 new iOSDialogBuilder(this)
                                         .setTitle("Error")
-                                        .setSubtitle("Please submit all required details")
+                                        .setSubtitle("Please agree to the terms and conditions")
                                         .setBoldPositiveLabel(true)
                                         .setCancelable(true)
                                         .setPositiveListener("okay", new iOSDialogClickListener() {
@@ -272,8 +282,8 @@ public class SignUp extends AppCompatActivity {
 
 
             new iOSDialogBuilder(this)
-                    .setTitle("Error")
-                    .setSubtitle("Please enter your first name")
+                    .setTitle("Error!")
+                    .setSubtitle("Please make sure all the relevant details are entered")
                     .setBoldPositiveLabel(true)
                     .setCancelable(true)
                     .setPositiveListener("okay", new iOSDialogClickListener() {

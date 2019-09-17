@@ -1,6 +1,5 @@
 package com.example.dell.shoegamev1.repositories;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.backendless.Backendless;
@@ -8,18 +7,11 @@ import com.backendless.BackendlessUser;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
 import com.example.dell.shoegamev1.models.SubmittedUserObject;
-import com.gdacciaro.iOSDialog.iOSDialog;
-import com.gdacciaro.iOSDialog.iOSDialogBuilder;
-import com.gdacciaro.iOSDialog.iOSDialogClickListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import br.vince.easysave.EasySave;
-import br.vince.easysave.SaveAsyncCallback;
 
 public class UserRepository {
 
@@ -30,10 +22,20 @@ public class UserRepository {
     private ArrayList<BackendlessUser> dataSet = new ArrayList<>();
     private String signUpErrorMessage;
     private MutableLiveData<Boolean> signUpResult = new MutableLiveData<>();
-    private MutableLiveData<BackendlessUser> userResponse = new MutableLiveData<>();
+    private MutableLiveData<Boolean> signInResult = new MutableLiveData<>();
+    private MutableLiveData<BackendlessUser> signUpUserResponse = new MutableLiveData<>();
+    private MutableLiveData<BackendlessUser> signInUserResponse = new MutableLiveData<>();
 
-    public MutableLiveData<BackendlessUser> getUserResponse() {
-        return userResponse;
+    public MutableLiveData<BackendlessUser> getSignUpUserResponse() {
+        return signUpUserResponse;
+    }
+
+    public MutableLiveData<Boolean> getSignInResult() {
+        return signInResult;
+    }
+
+    public MutableLiveData<BackendlessUser> getSignInUserResponse() {
+        return signInUserResponse;
     }
 
     private BackendlessUser currentBackendlessUser = new BackendlessUser();
@@ -51,6 +53,40 @@ public class UserRepository {
         }
 
         return instance;
+    }
+
+
+    public void logUserIn(SubmittedUserObject thisSubmittedUserObject){
+
+        Backendless.UserService.login(thisSubmittedUserObject.geteMail(), thisSubmittedUserObject.getPassword(), new AsyncCallback<BackendlessUser>() {
+            @Override
+            public void handleResponse(BackendlessUser response) {
+
+                if(response!=null){
+
+                    signInUserResponse.setValue(response);
+                    signInResult.setValue(true);
+                    Log.d("MyLogsUser", "user signed in successfully. token: " + response.toString());
+
+                }
+
+
+            }
+
+            @Override
+            public void handleFault(BackendlessFault fault) {
+
+                if(fault!=null){
+
+                    Log.d("MyLogsUser", "user sign in failed. error: " + fault.toString());
+
+                }
+
+            }
+        },thisSubmittedUserObject.getStayLoggedIn());
+
+
+
     }
 
 
@@ -78,7 +114,7 @@ public class UserRepository {
                     if (response != null) {
                         currentBackendlessUser = response;
                         signUpResult.setValue(true);
-                        userResponse.setValue(response);
+                        signUpUserResponse.setValue(response);
                         Log.d("MyLogsUser", "user registered successfully. token: " + response.toString());
 
                     } else {

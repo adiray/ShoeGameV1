@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 
 public class ProfileFragment extends Fragment {
 
-    View view;
-    TextView signUpTextView;
+    private View view;
+    private TextView signUpTextView,logInTextView;
 
 
     @Nullable
@@ -23,6 +23,14 @@ public class ProfileFragment extends Fragment {
 
         view = inflater.inflate(R.layout.profile_fragment, container, false);
         signUpTextView = view.findViewById(R.id.profileFragmentSignUpTV);
+        logInTextView = view.findViewById(R.id.profileFragmentLogInTV);
+        logInTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), LogIn.class);
+                startActivity(intent);
+            }
+        });
         signUpTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

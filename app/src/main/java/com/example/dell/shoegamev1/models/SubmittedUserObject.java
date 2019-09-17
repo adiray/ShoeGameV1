@@ -3,9 +3,15 @@ package com.example.dell.shoegamev1.models;
 public class SubmittedUserObject {
 
 
-    String firstName, lastName, eMail, phone, password;
-    Boolean stayLoggedIn, agreeToTermsAndConditions;
-    Integer gender;  //none selected:1, male:2, female:3
+    private String firstName, lastName, eMail, phone, password;
+    private Boolean stayLoggedIn, agreeToTermsAndConditions;
+    private Integer gender;  //none selected:1, male:2, female:3
+
+    public SubmittedUserObject(String eMail, String password, Boolean stayLoggedIn) {
+        this.eMail = eMail;
+        this.password = password;
+        this.stayLoggedIn = stayLoggedIn;
+    }
 
     public SubmittedUserObject(String firstName, String lastName, String eMail, String phone, String password, Boolean stayLoggedIn, Boolean agreeToTermsAndConditions, Integer gender) {
         this.firstName = firstName;

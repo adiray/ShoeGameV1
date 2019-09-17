@@ -10,6 +10,14 @@ import androidx.lifecycle.ViewModel;
 public class SignUpActivityViewModel extends ViewModel {
 
 
+
+    /*Activities that use this view model
+    * Sign up activity
+    * log in activity
+    * */
+
+
+
     private UserRepository mUserRepository;
 
 /*
@@ -48,9 +56,31 @@ public class SignUpActivityViewModel extends ViewModel {
 
     public LiveData<BackendlessUser> getNewlyRegisteredUser(){
 
-        return mUserRepository.getUserResponse();
+        return mUserRepository.getSignUpUserResponse();
 
     }
+
+
+    public void logUserIn(SubmittedUserObject thisSubmittedUserObject){
+
+        mUserRepository.logUserIn(thisSubmittedUserObject);
+
+    }
+
+
+    public LiveData<BackendlessUser> getNewlySignedInUser(){
+
+        return mUserRepository.getSignInUserResponse();
+    }
+
+
+    public LiveData<Boolean> getNewSignInResult(){
+
+        return mUserRepository.getSignInResult();
+
+    }
+
+
 
 
 
