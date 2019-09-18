@@ -303,10 +303,12 @@ public class ShoeObject extends AbstractItem<ShoeObject, ShoeObject.ShoeObjectVi
     public void bindView(ShoeObjectViewHolder holder, List<Object> payloads) {
         super.bindView(holder, payloads);
 
-        holder.priceTextView.setText(price);
+        String priceText = "$" + price;
+        holder.titleTextView.setText(getTitle());
+        holder.priceTextView.setText(priceText);
         //test glide code
         Glide.with(holder.itemView).load(mainImage).apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(45, 0,
-                RoundedCornersTransformation.CornerType.BOTTOM))).apply(RequestOptions.placeholderOf(R.drawable.infinity_loading_gif_green).fallback(R.drawable.fallback_product_img)
+                RoundedCornersTransformation.CornerType.ALL))).apply(RequestOptions.placeholderOf(R.drawable.infinity_loading_gif_green).fallback(R.drawable.fallback_product_img)
                 .error(R.drawable.ic_error_outline_black_24dp)).into(holder.productImageView);
 
 
@@ -315,16 +317,18 @@ public class ShoeObject extends AbstractItem<ShoeObject, ShoeObject.ShoeObjectVi
 
     protected static class ShoeObjectViewHolder extends RecyclerView.ViewHolder {
 
-        LottieAnimationView productImageView;
+        ImageView productImageView;
         ImageView cartImageView;
-        TextView priceTextView;
+        TextView priceTextView , titleTextView;
 
 
         public ShoeObjectViewHolder(@NonNull View itemView) {
             super(itemView);
+
             productImageView = itemView.findViewById(R.id.homeFragmentBestDealsImgView);
             cartImageView = itemView.findViewById(R.id.homeFragmentBestDealsCartImgView);
             priceTextView = itemView.findViewById(R.id.homeFragmentBestDealsPriceTV);
+            titleTextView = itemView.findViewById(R.id.homeFragmentBestDealsTitleTV);
         }
     }
 
@@ -444,3 +448,61 @@ private void loadImageSimpleTargetApplicationContext() {
 
 
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:id="@+id/homeFragmentBestDealsImgView"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/rounded_rect_8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/homeFragmentBestDealsPriceTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/quicksand_bold"
+        android:text="$86"
+        android:textColor="#7E7A7A"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/homeFragmentBestDealsImgView"
+        app:layout_constraintTop_toBottomOf="@+id/homeFragmentBestDealsImgView" />
+
+
+    <ImageView
+        android:id="@+id/homeFragmentBestDealsCartImgView"
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="13dp"
+        android:src="@drawable/shopping_bag_win10_gray"
+        app:layout_constraintEnd_toEndOf="@+id/homeFragmentBestDealsImgView"
+        app:layout_constraintTop_toBottomOf="@+id/homeFragmentBestDealsImgView" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>*/

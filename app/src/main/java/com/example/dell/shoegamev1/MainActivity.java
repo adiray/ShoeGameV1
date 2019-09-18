@@ -2,16 +2,22 @@ package com.example.dell.shoegamev1;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
+import br.vince.easysave.EasySave;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.backendless.Backendless;
+import com.backendless.BackendlessUser;
+import com.backendless.async.callback.AsyncCallback;
+import com.backendless.exceptions.BackendlessFault;
 import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
 import com.gauravk.bubblenavigation.BubbleNavigationLinearView;
 import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
+import com.novoda.merlin.MerlinsBeard;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,28 +26,104 @@ public class MainActivity extends AppCompatActivity {
     BubbleNavigationConstraintView mBubbleNav;
     BubbleNavigationLinearView mBubbleNavBottom;
 
+    //booleans
+    public static Boolean IsValidLogin = false;
+
+    //backendless
+    public static BackendlessUser currentLoggedInBackendlessUser;
+
+    //merlin
+    private MerlinsBeard merlinsBeard;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //create merlin
+        //library used to monitor internet connectivity
+        merlinsBeard = MerlinsBeard.from(this);
+
 
         //initialize backendless
-        Backendless.initApp( getApplicationContext(),
-               "05DBC061-3DE1-0252-FF3C-FBCECC684700",
-               "EB559093-3624-CE96-FFEF-AECE72F44100");
+        Backendless.initApp(getApplicationContext(),
+                "05DBC061-3DE1-0252-FF3C-FBCECC684700",
+                "EB559093-3624-CE96-FFEF-AECE72F44100");
+
+
+        getCurrentUser();
+
 
         initializeViews();
-
 
 
     }
 
 
-    void initializeViews() {
+    private void getCurrentUser() {
 
 
+        if (merlinsBeard.isConnected()) {
+            Backendless.UserService.isValidLogin(new AsyncCallback<Boolean>() {
+                @Override
+                public void handleResponse(Boolean response) {
+
+                    if (response != null) {
+                        IsValidLogin = response;
+                        Log.d("MyLogsUser", "login validity checked successfully. response: " + response.toString());
+                        retrieveCurrentUserFromInternet();
+
+
+                    }
+
+
+                }
+
+                @Override
+                public void handleFault(BackendlessFault fault) {
+
+                    if (fault != null) {
+                        Log.d("MyLogsUser", "failed to check current user login validity. error: " + fault.toString());
+                    }
+
+                }
+            });
+        }
+
+
+    }
+
+
+    private void retrieveCurrentUserFromInternet() {
+
+        String currentUserId = Backendless.UserService.loggedInUser();
+
+        if (currentUserId != null) {
+            Backendless.UserService.findById(currentUserId, new AsyncCallback<BackendlessUser>() {
+                @Override
+                public void handleResponse(BackendlessUser response) {
+
+                    currentLoggedInBackendlessUser = response;
+                    Log.d("MyLogsUser", "current logged in user retrieved from internet. User details: " + response.toString());
+
+
+                }
+
+                @Override
+                public void handleFault(BackendlessFault fault) {
+
+                    Log.d("MyLogsUser", "failed to retrieve current logged in user from internet. error: " + fault.toString());
+
+                }
+            });
+        }
+
+
+    }
+
+
+    private void initializeViews() {
 
 
         //get references to the views
@@ -86,11 +168,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNavigationChanged(View view, int position) {
 
-                mainViewPager.setCurrentItem(position,true);
+                mainViewPager.setCurrentItem(position, true);
             }
         });
 
 
+        mainViewPager.setOffscreenPageLimit(3);
 
       /*
 
@@ -103,9 +186,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 */
-
-
-
 
 
     }

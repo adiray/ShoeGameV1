@@ -40,6 +40,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentCartLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -74,6 +75,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentTrackingLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -108,6 +110,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentOrdersLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -142,6 +145,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentSavedLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -176,6 +180,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentEditProfileLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -210,6 +215,47 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentPaymentMethodsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:id="@+id/profileFragmentPaymentMethodsTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Payment methods"
+                    android:textColor="@color/myColorInactiveTextBg"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <ImageView
+                    android:id="@+id/profileFragmentPaymentMethodsMoreIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:src="@drawable/right_arrow_black_simple"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentSupportLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -244,6 +290,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentAboutAppLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -278,6 +325,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentFaqLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -316,6 +364,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentSignUpLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -353,6 +402,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentLogInLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -384,6 +434,82 @@
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentLogOutLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:id="@+id/profileFragmentLogOutTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Log out"
+                    android:textColor="@color/myColorInactiveTextBg"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <ImageView
+                    android:id="@+id/profileFragmentAboutLogOutMoreIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:src="@drawable/right_arrow_black_simple"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/profileFragmentDeleteAccountLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:id="@+id/profileFragmentDeleteAccountTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Delete account"
+                    android:textColor="@color/myColorInactiveTextBg"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <ImageView
+                    android:id="@+id/profileFragmentDeleteAccountMoreIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:src="@drawable/right_arrow_black_simple"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
 
 
 

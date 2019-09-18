@@ -20,6 +20,7 @@ import com.gdacciaro.iOSDialog.iOSDialog;
 import com.gdacciaro.iOSDialog.iOSDialogBuilder;
 import com.gdacciaro.iOSDialog.iOSDialogClickListener;
 import com.libizo.CustomEditText;
+import com.novoda.merlin.MerlinsBeard;
 
 public class LogIn extends AppCompatActivity {
 
@@ -38,11 +39,18 @@ public class LogIn extends AppCompatActivity {
     //VIEW MODEL
     SignUpActivityViewModel signUpActivityViewModel;
 
+    //merlin
+    MerlinsBeard merlinsBeard;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+
+        //create merlin
+        //library used to monitor internet connectivity
+        merlinsBeard = MerlinsBeard.from(this);
 
         //get references to views
 
@@ -58,29 +66,51 @@ public class LogIn extends AppCompatActivity {
         submitDetailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logUserIn();
+
+                if (merlinsBeard.isConnected()) {
+
+                    Log.d("MyLogsMerlin", "Merlin is connected. Activity:log in");
+
+                    logUserIn();
+                } else {
+
+                    Log.d("MyLogsMerlin", "Merlin is NOT connected. Activity:log in");
+                    new iOSDialogBuilder(LogIn.this)
+                            .setTitle("Sorry")
+                            .setSubtitle("We cannot seem to access the internet, please try again!")
+                            .setBoldPositiveLabel(true)
+                            .setCancelable(true)
+                            .setPositiveListener("okay", new iOSDialogClickListener() {
+                                @Override
+                                public void onClick(iOSDialog dialog) {
+
+                                    dialog.dismiss();
+                                }
+                            })
+                            .build().show();
+
+
+                }
+
+
             }
         });
-
 
 
         signUpActivityViewModel.getNewSignInResult().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
 
-                if (aBoolean){
+                if (aBoolean) {
 
 
-
-                    if(signUpActivityViewModel.getNewlyRegisteredUser().getValue()!=null){
+                    if (signUpActivityViewModel.getNewlyRegisteredUser().getValue() != null) {
 
                         saveSignedInUserToCache(signUpActivityViewModel.getNewlySignedInUser().getValue());
                     }
 
 
-
-
-                    //TODO Display success dialog and send user to profile.
+                    //TODO  send user to profile.
 
 
                     new iOSDialogBuilder(LogIn.this)
@@ -98,14 +128,11 @@ public class LogIn extends AppCompatActivity {
                             .build().show();
 
 
-
-
-
-
                 }
 
             }
         });
+
 
     }
 
@@ -125,8 +152,8 @@ public class LogIn extends AppCompatActivity {
 
                 }
 
-                SubmittedUserObject newlySubmitedUserObject = new SubmittedUserObject(email, password, staySignedIn);
-                signUpActivityViewModel.logUserIn(newlySubmitedUserObject);
+                SubmittedUserObject newlySubmittedUserObject = new SubmittedUserObject(email, password, staySignedIn);
+                signUpActivityViewModel.logUserIn(newlySubmittedUserObject);
 
 
             } else {

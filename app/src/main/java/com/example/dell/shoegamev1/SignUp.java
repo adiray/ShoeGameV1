@@ -24,6 +24,7 @@ import com.gdacciaro.iOSDialog.iOSDialog;
 import com.gdacciaro.iOSDialog.iOSDialogBuilder;
 import com.gdacciaro.iOSDialog.iOSDialogClickListener;
 import com.libizo.CustomEditText;
+import com.novoda.merlin.MerlinsBeard;
 
 
 import java.util.ArrayList;
@@ -52,11 +53,18 @@ public class SignUp extends AppCompatActivity {
     //VIEW MODEL
     SignUpActivityViewModel signUpActivityViewModel;
 
+    //merlin
+    MerlinsBeard merlinsBeard;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        //create merlin
+        //library used to monitor internet connectivity
+        merlinsBeard = MerlinsBeard.from(this);
 
 
         //get references to views
@@ -124,7 +132,33 @@ public class SignUp extends AppCompatActivity {
         submitDetailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createSubmittedUserObject();
+
+                if (merlinsBeard.isConnected()) {
+
+                    Log.d("MyLogsMerlin", "Merlin is connected. Activity:Sign Up");
+                    createSubmittedUserObject();
+
+                } else {
+
+                    Log.d("MyLogsMerlin", "Merlin is NOT connected. Activity:Sign Up");
+
+                    new iOSDialogBuilder(SignUp.this)
+                            .setTitle("Sorry")
+                            .setSubtitle("We cannot seem to access the internet, please try again!")
+                            .setBoldPositiveLabel(true)
+                            .setCancelable(true)
+                            .setPositiveListener("okay", new iOSDialogClickListener() {
+                                @Override
+                                public void onClick(iOSDialog dialog) {
+
+                                    dialog.dismiss();
+                                }
+                            })
+                            .build().show();
+
+                }
+
+
             }
         });
 

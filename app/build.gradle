@@ -22,6 +22,9 @@ android {
 
 dependencies {
 
+    //merlin. Used for checking internet connectivity and gives callbacks
+    implementation 'com.novoda:merlin:1.2.0'
+
     //Easy save caching library
     implementation 'com.github.Guilherme-HRamos:Easy-Save:1.2.1'
 

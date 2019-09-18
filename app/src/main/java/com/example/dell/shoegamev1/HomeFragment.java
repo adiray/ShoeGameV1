@@ -1,17 +1,36 @@
 package com.example.dell.shoegamev1;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.backendless.BackendlessUser;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.dell.shoegamev1.repositories.ShoesRepository;
+import com.example.dell.shoegamev1.responseobjects.ShoeObject;
+import com.example.dell.shoegamev1.viewmodels.HomeFragmentShoesViewModel;
+import com.example.dell.shoegamev1.viewmodels.SignUpActivityViewModel;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.novoda.merlin.MerlinsBeard;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class HomeFragment extends Fragment {
@@ -19,11 +38,26 @@ public class HomeFragment extends Fragment {
 
     View view;
 
+    //views
+    private RecyclerView bestDealsRecyclerView;
+
     ImageView bestDealImageView1, bestDealImageView3, bestDealImageView2, bestDealImageView4, featuredItemImageView;
-    ImageView bestDealCartImage1 ,  bestDealLikeImage1;
+    ImageView bestDealCartImage1, bestDealLikeImage1;
     ImageView womenCollectionImageView, menCollectionImageView, moreCollectionImageView, sportsShoesCollectionImageView;
 
-    public HomeFragment() {}
+    //merlin
+    private MerlinsBeard merlinsBeard;
+
+    //create our FastAdapter which will manage everything
+    private ItemAdapter<ShoeObject> bestDealsItemAdapter;
+    private FastAdapter bestDealsFastAdapter;
+
+
+    //ViewModel
+    HomeFragmentShoesViewModel homeFragmentShoesViewModel;
+
+    //Current User
+    BackendlessUser currentGlobalUser = new BackendlessUser();
 
 
     @Nullable
@@ -31,9 +65,301 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.home_fragment, container, false);
 
+        //create merlin
+        //library used to monitor internet connectivity
+        merlinsBeard = MerlinsBeard.from(getActivity());
+
+        //initialize view model
+        homeFragmentShoesViewModel = ViewModelProviders.of(this).get(HomeFragmentShoesViewModel.class);
+        homeFragmentShoesViewModel.init();
+
+        // //delay the display of soft keyboard until the user ties to input details into the filters
+        //        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        //initialize recycler view
+        bestDealsRecyclerView = view.findViewById(R.id.homeFragmentBestDealsRecyclerView);
+        bestDealsRecyclerView.setHasFixedSize(true);
+        bestDealsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
+
+        //initialize our FastAdapter which will manage everything
+        bestDealsItemAdapter = new ItemAdapter<>();
+        bestDealsFastAdapter = FastAdapter.with(bestDealsItemAdapter);
 
 
-        /*
+        //TODO SAVE TAGS IN CACHE
+
+
+        requestBestDeals();
+
+
+        return view;
+    }
+
+
+    private void requestBestDeals() {
+
+
+        currentGlobalUser = MainActivity.currentLoggedInBackendlessUser;
+
+
+        Integer genderInt = 1;
+
+        if (currentGlobalUser != null) {
+            genderInt = (Integer) currentGlobalUser.getProperty("gender");
+            //2 = male, 3= female, 1= none
+        } else {
+
+            Log.d("MyLogsHomeFrag", "failed to retrieve gender int, step one");
+
+        }
+
+        if (genderInt != null) {
+
+            if (genderInt == 1) {
+                //no gender
+                String whereClause = "name = 'Best deals'";
+
+                getBestDealItems(whereClause);
+
+
+            } else if (genderInt == 2) {
+
+                //men
+                String whereClause = "name = 'Men'";
+                getBestDealItems(whereClause);
+
+
+            } else if (genderInt == 3) {
+
+                //women
+                String whereClause = "name = 'Women'";
+                getBestDealItems(whereClause);
+
+
+            }
+
+
+        } else {
+
+            Log.d("MyLogsHomeFrag", "failed to retrieve gender int, step two");
+
+
+        }
+
+
+    }
+
+
+    private List<ShoeObject> createShoeObjects(List<Map> shoeObjectMaps) {
+
+        List<ShoeObject> shoeObjectData = new ArrayList<>();
+
+        if (shoeObjectMaps != null) {
+
+            Integer count = shoeObjectMaps.size() - 1;
+
+            for (int i = 0; i <= count; i++) {
+
+                ShoeObject holder = new ShoeObject();
+                holder.setMainImage((String) shoeObjectMaps.get(i).get("mainImage"));
+                holder.setPrice((String) shoeObjectMaps.get(i).get("price"));
+                holder.setTitle((String) shoeObjectMaps.get(i).get("title"));
+
+                shoeObjectData.add(holder);
+
+
+            }
+
+
+        } else {
+
+            Log.d("MyLogsHomeFrag", "createShoeObjects method. passed in shoeObjectMap = null");
+
+        }
+
+
+        return shoeObjectData;
+
+    }
+
+    private void getBestDealItems(String whereClause) {
+
+
+        homeFragmentShoesViewModel.requestSpecificTags(whereClause);
+
+        homeFragmentShoesViewModel.getSpecificTagsRequestResult().observe(getActivity(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+
+                if (aBoolean) {
+
+                    if (homeFragmentShoesViewModel.getSpecificTagsResponse().getValue() != null) {
+                        String tagId = (String) homeFragmentShoesViewModel.getSpecificTagsResponse().getValue().get(0).get("objectId");
+
+                        if (tagId != null) {
+
+                            String thisWhereClause = "tags='" + tagId + "'";
+                            String thisSortBy = "price%20asc";
+                            homeFragmentShoesViewModel.requestBestDeals(thisWhereClause, thisSortBy);
+
+                            homeFragmentShoesViewModel.getBestDealsRequestResult().observe(getActivity(), new Observer<Boolean>() {
+                                @Override
+                                public void onChanged(Boolean aBoolean) {
+
+                                    homeFragmentShoesViewModel.getBestDealsResponse().observe(getActivity(), new Observer<List<Map>>() {
+                                        @Override
+                                        public void onChanged(List<Map> maps) {
+
+                                            if (maps != null) {
+                                                bestDealsRecyclerView.setAdapter(bestDealsFastAdapter);
+                                                bestDealsItemAdapter.add(createShoeObjects(maps));
+                                            }
+
+                                        }
+                                    });
+
+
+                                }
+                            });
+
+
+                        } else {
+                            Log.d("MyLogsHomeFrag", "Tag id = null");
+                        }
+
+
+                    }
+
+
+                }
+
+            }
+        });
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*homeFragmentShoesViewModel.getTagsRequestResult().observe(getActivity(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+
+                if (aBoolean) {
+
+                    if (homeFragmentShoesViewModel.getTagsResponse().getValue() != null) {
+
+                        List<Map> tagsRequestResult = homeFragmentShoesViewModel.getTagsResponse().getValue();
+
+                    }
+
+                }
+
+            }
+        });*/
+
+
+
+
+
+
+
+
+
+
+
+
+/*    homeFragmentShoesViewModel.requestSpecificTags(whereClause);
+
+                homeFragmentShoesViewModel.getSpecificTagsRequestResult().observe(getActivity(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean aBoolean) {
+
+                        if (aBoolean) {
+
+                            if (homeFragmentShoesViewModel.getSpecificTagsResponse().getValue() != null) {
+                                String tagId = (String) homeFragmentShoesViewModel.getSpecificTagsResponse().getValue().get(0).get("objectId");
+
+                                if (tagId != null) {
+
+                                    String thisWhereClause = "tags='" + tagId + "'";
+                                    String thisSortBy = "price%20asc";
+                                    homeFragmentShoesViewModel.requestBestDeals(thisWhereClause, thisSortBy);
+
+                                    homeFragmentShoesViewModel.getBestDealsRequestResult().observe(getActivity(), new Observer<Boolean>() {
+                                        @Override
+                                        public void onChanged(Boolean aBoolean) {
+
+                                            bestDealsRecyclerView.setAdapter(bestDealsFastAdapter);
+                                            bestDealsItemAdapter.add(createShoeObjects(homeFragmentShoesViewModel.getBestDealsResponse().getValue()));
+
+                                        }
+                                    });
+
+
+                                } else {
+                                    Log.d("MyLogsHomeFrag", "Tag id = null");
+                                }
+
+
+                            }
+
+
+                        }
+
+                    }
+                });*/
+
+
+
+
+
+
+
+
+
+
+
+  /*
 
         bestDealImageView1 = view.findViewById(R.id.homeFragmentBestDealsImgView1);
         bestDealCartImage1 = view.findViewById(R.id.homeFragmentBestDealsCartImg1);
@@ -90,9 +416,14 @@ public class HomeFragment extends Fragment {
 
 
 
-        return view;
-    }
-}
+
+
+
+
+
+
+
+
 
 
 
