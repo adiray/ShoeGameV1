@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.backendless.BackendlessUser;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -17,6 +18,7 @@ import com.example.dell.shoegamev1.viewmodels.SignUpActivityViewModel;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.novoda.merlin.MerlinsBeard;
+import com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class HomeFragment extends Fragment {
@@ -39,8 +43,9 @@ public class HomeFragment extends Fragment {
     View view;
 
     //views
+    private IndefinitePagerIndicator bestDealsRecyclerViewIndicator;
     private RecyclerView bestDealsRecyclerView;
-
+    private LottieAnimationView bestDealsRecyclerViewLoadingView;
     ImageView bestDealImageView1, bestDealImageView3, bestDealImageView2, bestDealImageView4, featuredItemImageView;
     ImageView bestDealCartImage1, bestDealLikeImage1;
     ImageView womenCollectionImageView, menCollectionImageView, moreCollectionImageView, sportsShoesCollectionImageView;
@@ -65,6 +70,11 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.home_fragment, container, false);
 
+
+        //initialize the views
+        bestDealsRecyclerViewLoadingView = view.findViewById(R.id.homeFragmentBestDealsRecyclerViewLoadingView);
+        bestDealsRecyclerViewIndicator = view.findViewById(R.id.homeFragmentBestDealsRecyclerViewIndicator);
+
         //create merlin
         //library used to monitor internet connectivity
         merlinsBeard = MerlinsBeard.from(getActivity());
@@ -79,7 +89,13 @@ public class HomeFragment extends Fragment {
         //initialize recycler view
         bestDealsRecyclerView = view.findViewById(R.id.homeFragmentBestDealsRecyclerView);
         bestDealsRecyclerView.setHasFixedSize(true);
-        bestDealsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false));
+        bestDealsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
+        bestDealsRecyclerViewIndicator.attachToRecyclerView(bestDealsRecyclerView);
+
+        SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(bestDealsRecyclerView);
+        bestDealsRecyclerView.setVisibility(View.GONE);
+        bestDealsRecyclerViewIndicator.setVisibility(View.GONE);
 
         //initialize our FastAdapter which will manage everything
         bestDealsItemAdapter = new ItemAdapter<>();
@@ -213,6 +229,10 @@ public class HomeFragment extends Fragment {
                                             if (maps != null) {
                                                 bestDealsRecyclerView.setAdapter(bestDealsFastAdapter);
                                                 bestDealsItemAdapter.add(createShoeObjects(maps));
+                                                bestDealsRecyclerViewLoadingView.pauseAnimation();
+                                                bestDealsRecyclerViewLoadingView.setVisibility(View.GONE);
+                                                bestDealsRecyclerView.setVisibility(View.VISIBLE);
+                                                bestDealsRecyclerViewIndicator.setVisibility(View.VISIBLE);
                                             }
 
                                         }

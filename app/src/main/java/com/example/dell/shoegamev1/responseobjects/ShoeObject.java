@@ -308,8 +308,8 @@ public class ShoeObject extends AbstractItem<ShoeObject, ShoeObject.ShoeObjectVi
         holder.priceTextView.setText(priceText);
         //test glide code
         Glide.with(holder.itemView).load(mainImage).apply(RequestOptions.bitmapTransform(new RoundedCornersTransformation(45, 0,
-                RoundedCornersTransformation.CornerType.ALL))).apply(RequestOptions.placeholderOf(R.drawable.infinity_loading_gif_green).fallback(R.drawable.fallback_product_img)
-                .error(R.drawable.ic_error_outline_black_24dp)).into(holder.productImageView);
+                RoundedCornersTransformation.CornerType.ALL))).apply(RequestOptions.placeholderOf(R.drawable.loading_default_img_square).fallback(R.drawable.fallback_product_img)
+                .error(R.drawable.default_error_img)).into(holder.productImageView);
 
 
     }

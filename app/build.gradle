@@ -22,6 +22,9 @@ android {
 
 dependencies {
 
+    //recycler view indicator
+    implementation 'com.ryanjeffreybrooks:indefinitepagerindicator:1.0.10'
+
     //merlin. Used for checking internet connectivity and gives callbacks
     implementation 'com.novoda:merlin:1.2.0'
 

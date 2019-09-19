@@ -1,4 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+package com.example.dell.shoegamev1.adapters;
+
+public class TestCodeClass {
+
+}
+
+/*<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
@@ -17,8 +23,8 @@
 
         <ImageView
             android:id="@+id/homeFragmentBestDealsImgView"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:background="@drawable/rounded_rect_8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -41,7 +47,7 @@
         <TextView
             android:maxLines="2"
             android:id="@+id/homeFragmentBestDealsTitleTV"
-            android:layout_width="130dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
@@ -95,4 +101,4 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</androidx.cardview.widget.CardView>
+</androidx.cardview.widget.CardView>*/
