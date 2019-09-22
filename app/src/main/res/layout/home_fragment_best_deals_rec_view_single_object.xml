@@ -62,7 +62,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="13dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/shopping_bag_win10_gray"
+            android:src="@drawable/shopping_bag_black_ios"
             app:layout_constraintStart_toEndOf="@+id/homeFragmentBestDealsImgView"
             app:layout_constraintBottom_toBottomOf="@+id/homeFragmentBestDealsImgView" />
 

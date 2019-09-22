@@ -42,6 +42,10 @@ public class HomeFragment extends Fragment {
 
     View view;
 
+    //Booleans
+    Boolean bestDealsLoadFailed = false;
+
+
     //views
     private IndefinitePagerIndicator bestDealsRecyclerViewIndicator;
     private RecyclerView bestDealsRecyclerView;
@@ -91,6 +95,23 @@ public class HomeFragment extends Fragment {
         bestDealsRecyclerView.setHasFixedSize(true);
         bestDealsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         bestDealsRecyclerViewIndicator.attachToRecyclerView(bestDealsRecyclerView);
+
+        bestDealsRecyclerViewLoadingView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if(bestDealsLoadFailed){
+
+                    bestDealsRecyclerViewLoadingView.setAnimation(R.raw.refresh);
+                    requestBestDeals();
+
+                }
+
+
+
+            }
+        });
 
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(bestDealsRecyclerView);
@@ -222,21 +243,32 @@ public class HomeFragment extends Fragment {
                                 @Override
                                 public void onChanged(Boolean aBoolean) {
 
-                                    homeFragmentShoesViewModel.getBestDealsResponse().observe(getActivity(), new Observer<List<Map>>() {
-                                        @Override
-                                        public void onChanged(List<Map> maps) {
+                                    if (aBoolean) {
+                                        homeFragmentShoesViewModel.getBestDealsResponse().observe(getActivity(), new Observer<List<Map>>() {
+                                            @Override
+                                            public void onChanged(List<Map> maps) {
 
-                                            if (maps != null) {
-                                                bestDealsRecyclerView.setAdapter(bestDealsFastAdapter);
-                                                bestDealsItemAdapter.add(createShoeObjects(maps));
-                                                bestDealsRecyclerViewLoadingView.pauseAnimation();
-                                                bestDealsRecyclerViewLoadingView.setVisibility(View.GONE);
-                                                bestDealsRecyclerView.setVisibility(View.VISIBLE);
-                                                bestDealsRecyclerViewIndicator.setVisibility(View.VISIBLE);
+                                                if (maps != null) {
+                                                    bestDealsRecyclerView.setAdapter(bestDealsFastAdapter);
+                                                    bestDealsItemAdapter.add(createShoeObjects(maps));
+                                                    bestDealsRecyclerViewLoadingView.pauseAnimation();
+                                                    bestDealsRecyclerViewLoadingView.setVisibility(View.GONE);
+                                                    bestDealsRecyclerView.setVisibility(View.VISIBLE);
+                                                    bestDealsRecyclerViewIndicator.setVisibility(View.VISIBLE);
+                                                    bestDealsLoadFailed = false;
+                                                }
+
                                             }
+                                        });
+                                    }else{
 
-                                        }
-                                    });
+
+                                        bestDealsLoadFailed = true;
+                                        bestDealsRecyclerViewLoadingView.setAnimation(R.raw.shopping_bag_error);
+
+
+
+                                    }
 
 
                                 }

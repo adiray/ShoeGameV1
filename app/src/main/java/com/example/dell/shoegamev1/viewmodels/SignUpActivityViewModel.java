@@ -14,6 +14,8 @@ public class SignUpActivityViewModel extends ViewModel {
     /*Activities that use this view model
     * Sign up activity
     * log in activity
+    * main activity
+    * profile
     * */
 
 
@@ -39,13 +41,37 @@ public class SignUpActivityViewModel extends ViewModel {
 
 
 
+    //GETTERS
     public LiveData<Boolean> getSignUpResult(){
         return mUserRepository.getSignUpResult();
 
     }
 
+    public LiveData<Boolean> getIsValidLoginCheckResult(){
+
+        return mUserRepository.getIsValidLoginCheckResult();
+    }
+
+    public LiveData<Boolean> getIsValidLoginCheckResponse(){
+        return mUserRepository.getIsValidLoginCheckResponse();
+    }
+
+    public LiveData<Boolean> getRetrieveCurrentUserFromTheInternetResult(){
+        return mUserRepository.getRetrieveCurrentUserFromTheInternetResult();
+    }
+
+    public LiveData<BackendlessUser> getRetrieveCurrentUserFromTheInternetResponse(){
+        return mUserRepository.getRetrieveCurrentLoggedInUserResponse();
+    }
 
 
+    public void checkIfUserLoginIsValid(){
+        mUserRepository.checkIfUserLoginIsValid();
+    }
+
+    public void retrieveCurrentUserFromTheInternet(){
+        mUserRepository.retrieveCurrentUserFromTheInternet();
+    }
 
     public void registerNewUser(BackendlessUser userObject, SubmittedUserObject thisSubmittedUserObject) {
 

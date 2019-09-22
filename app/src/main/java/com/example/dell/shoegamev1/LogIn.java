@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders;
 import br.vince.easysave.EasySave;
 import br.vince.easysave.SaveAsyncCallback;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.backendless.BackendlessUser;
 import com.example.dell.shoegamev1.models.SubmittedUserObject;
 import com.example.dell.shoegamev1.viewmodels.SignUpActivityViewModel;
@@ -29,6 +31,7 @@ public class LogIn extends AppCompatActivity {
     CustomEditText eMailET, passwordET;
     Button submitDetailsBtn;
     CheckBox staySignedInCheckBox;
+    LottieAnimationView mLottieAnim;
 
     //Strings
     String email, password;
@@ -58,6 +61,7 @@ public class LogIn extends AppCompatActivity {
         passwordET = findViewById(R.id.activitySignInPasswordEditText);
         submitDetailsBtn = findViewById(R.id.activitySignInSubmitButton);
         staySignedInCheckBox = findViewById(R.id.activitySignInStaySignedInCheckBox);
+        mLottieAnim = findViewById(R.id.activitySignInLoadingView);
 
         signUpActivityViewModel = ViewModelProviders.of(this).get(SignUpActivityViewModel.class);
         signUpActivityViewModel.init();
@@ -104,10 +108,16 @@ public class LogIn extends AppCompatActivity {
                 if (aBoolean) {
 
 
-                    if (signUpActivityViewModel.getNewlyRegisteredUser().getValue() != null) {
+                    if (signUpActivityViewModel.getNewlySignedInUser().getValue() != null) {
 
                         saveSignedInUserToCache(signUpActivityViewModel.getNewlySignedInUser().getValue());
                     }
+
+                    mLottieAnim.pauseAnimation();
+                    mLottieAnim.setVisibility(View.GONE);
+
+
+
 
 
                     //TODO  send user to profile.
@@ -122,11 +132,40 @@ public class LogIn extends AppCompatActivity {
                                 @Override
                                 public void onClick(iOSDialog dialog) {
 
+
                                     dialog.dismiss();
+
+                                    Intent intent = new Intent(LogIn.this,MainActivity.class);
+                                    LogIn.this.startActivity(intent);
+
                                 }
                             })
                             .build().show();
 
+
+                } else {
+
+
+                    mLottieAnim.pauseAnimation();
+                    mLottieAnim.setVisibility(View.GONE);
+
+
+
+                    new iOSDialogBuilder(LogIn.this)
+                            .setTitle("Success")
+                            .setSubtitle("We have failed to log you in! Please check the login details")
+                            .setBoldPositiveLabel(true)
+                            .setCancelable(true)
+                            .setPositiveListener("okay", new iOSDialogClickListener() {
+                                @Override
+                                public void onClick(iOSDialog dialog) {
+
+                                    dialog.dismiss();
+
+
+                                }
+                            })
+                            .build().show();
 
                 }
 
@@ -148,12 +187,20 @@ public class LogIn extends AppCompatActivity {
 
                 if (staySignedInCheckBox.isChecked()) {
 
-                    staySignedIn = true;
+
+                    SubmittedUserObject newlySubmittedUserObject = new SubmittedUserObject(email, password, true);
+                    signUpActivityViewModel.logUserIn(newlySubmittedUserObject);
+                    mLottieAnim.setVisibility(View.VISIBLE);
+
+
+                }else{
+
+                    SubmittedUserObject newlySubmittedUserObject = new SubmittedUserObject(email, password, staySignedIn);
+                    signUpActivityViewModel.logUserIn(newlySubmittedUserObject);
+                    mLottieAnim.setVisibility(View.VISIBLE);
 
                 }
 
-                SubmittedUserObject newlySubmittedUserObject = new SubmittedUserObject(email, password, staySignedIn);
-                signUpActivityViewModel.logUserIn(newlySubmittedUserObject);
 
 
             } else {

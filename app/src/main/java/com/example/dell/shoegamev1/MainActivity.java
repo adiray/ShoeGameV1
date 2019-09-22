@@ -1,6 +1,8 @@
 package com.example.dell.shoegamev1;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import br.vince.easysave.EasySave;
 
@@ -12,6 +14,7 @@ import com.backendless.Backendless;
 import com.backendless.BackendlessUser;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
+import com.example.dell.shoegamev1.viewmodels.SignUpActivityViewModel;
 import com.gauravk.bubblenavigation.BubbleNavigationConstraintView;
 import com.gauravk.bubblenavigation.BubbleNavigationLinearView;
 import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener;
@@ -35,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     //merlin
     private MerlinsBeard merlinsBeard;
 
+    //view model
+    SignUpActivityViewModel signUpActivityViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
                 "EB559093-3624-CE96-FFEF-AECE72F44100");
 
 
+        //initialize the view model
+        signUpActivityViewModel = ViewModelProviders.of(this).get(SignUpActivityViewModel.class);
+        signUpActivityViewModel.init();
+
+
         getCurrentUser();
 
 
@@ -62,6 +73,34 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getCurrentUser() {
+
+        signUpActivityViewModel.checkIfUserLoginIsValid();
+
+        signUpActivityViewModel.getIsValidLoginCheckResult().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+
+                if (aBoolean) {
+
+                    signUpActivityViewModel.getIsValidLoginCheckResponse().observe(MainActivity.this, new Observer<Boolean>() {
+                        @Override
+                        public void onChanged(Boolean aBoolean) {
+
+                            if (aBoolean) {
+
+                                retrieveCurrentUserFromInternet();
+
+
+                            }
+
+                        }
+                    });
+
+
+                }
+
+            }
+        });
 
 
         if (merlinsBeard.isConnected()) {
@@ -96,6 +135,34 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void retrieveCurrentUserFromInternet() {
+
+
+        signUpActivityViewModel.retrieveCurrentUserFromTheInternet();
+        signUpActivityViewModel.getRetrieveCurrentUserFromTheInternetResult().observe(MainActivity.this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+
+                if(aBoolean){
+
+                    signUpActivityViewModel.getRetrieveCurrentUserFromTheInternetResponse().observe(MainActivity.this, new Observer<BackendlessUser>() {
+                        @Override
+                        public void onChanged(BackendlessUser user) {
+
+                            if(user!=null){
+
+                                //todo use the backendess user response
+
+                            }
+
+                        }
+                    });
+
+                }
+
+
+            }
+        });
+
 
         String currentUserId = Backendless.UserService.loggedInUser();
 
@@ -174,18 +241,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         mainViewPager.setOffscreenPageLimit(3);
-
-      /*
-
-        mBubbleNavBottom.setNavigationChangeListener(new BubbleNavigationChangeListener() {
-            @Override
-            public void onNavigationChanged(View view, int position) {
-
-                mainViewPager.setCurrentItem(position,true);
-
-            }
-        });
-*/
 
 
     }
