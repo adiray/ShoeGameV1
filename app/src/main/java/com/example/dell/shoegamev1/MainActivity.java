@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         signUpActivityViewModel.init();
 
 
-        getCurrentUser();
+
 
 
         initializeViews();

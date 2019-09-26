@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
-    card_view:cardElevation="1dp"
+    card_view:cardElevation="0dp"
     app:cardCornerRadius="8dp"
     android:layout_margin="6dp"
     android:layout_width="match_parent"
@@ -17,8 +17,8 @@
 
         <ImageView
             android:id="@+id/homeFragmentBestDealsImgView"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
             android:background="@drawable/rounded_rect_8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -39,9 +39,9 @@
 
 
         <TextView
-            android:maxLines="2"
+            android:maxLines="3"
             android:id="@+id/homeFragmentBestDealsTitleTV"
-            android:layout_width="130dp"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
@@ -62,7 +62,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="13dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/shopping_bag_black_ios"
+            android:src="@drawable/cart_green_colored_icon"
             app:layout_constraintStart_toEndOf="@+id/homeFragmentBestDealsImgView"
             app:layout_constraintBottom_toBottomOf="@+id/homeFragmentBestDealsImgView" />
 
@@ -74,13 +74,13 @@
             android:background="@drawable/rounded_rect_8dp"
             android:maxLines="1"
             android:id="@+id/homeFragmentBestDealsAddToCartTV"
-            android:layout_width="100dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="10dp"
 
-            android:fontFamily="@font/quicksand_light"
-            android:text="Add to cart"
+            android:fontFamily="@font/quicksand_bold"
+            android:text="Add"
             android:textColor="#7E7A7A"
             android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/homeFragmentBestDealsCartImgView"

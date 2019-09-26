@@ -35,6 +35,33 @@
 
 
 
+            <ImageView
+
+                android:id="@+id/homeFragmentSearchIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_search_black_24dp"
+                app:layout_constraintEnd_toStartOf="@+id/homeFragmentCartIcon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:padding="1dp"
+                android:id="@+id/homeFragmentCartIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="32dp"
+                android:src="@drawable/ic_shopping_cart_black_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
+
+
 
 
 
@@ -142,11 +169,24 @@
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="8dp"
                 android:fontFamily="@font/quicksand_bold"
-                android:text="@string/best_deals"
+                android:text="Latest"
                 android:textColor="#7E7A7A"
                 android:textSize="17sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:id="@+id/homeFragmentBestDealsMoreOptionsIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="24dp"
+                android:src="@drawable/ic_keyboard_arrow_down_grey_24dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/mainActivityBestDealsHeader"/>
+
+
 
 
             <ImageView

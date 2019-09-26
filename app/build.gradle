@@ -41,6 +41,9 @@ dependencies {
     //ios style dialog library
     implementation 'com.gdacciaro:iosdialog:1.0.3'
 
+    //input dialog
+    implementation 'com.afollestad.material-dialogs:core:3.1.1'
+
     //Spinner
     implementation 'com.github.arcadefire:nice-spinner:1.4.3'
 

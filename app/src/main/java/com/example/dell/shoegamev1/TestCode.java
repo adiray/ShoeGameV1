@@ -1,12 +1,21 @@
 package com.example.dell.shoegamev1;
 
+public class TestCode {
+
+}
+
+
+
+/*
+*
+* package com.example.dell.shoegamev1;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.backendless.BackendlessUser;
@@ -16,7 +25,6 @@ import com.example.dell.shoegamev1.repositories.ShoesRepository;
 import com.example.dell.shoegamev1.responseobjects.ShoeObject;
 import com.example.dell.shoegamev1.viewmodels.HomeFragmentShoesViewModel;
 import com.example.dell.shoegamev1.viewmodels.SignUpActivityViewModel;
-import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.novoda.merlin.MerlinsBeard;
@@ -66,8 +74,6 @@ public class HomeFragment extends Fragment {
 
     //ViewModel
     HomeFragmentShoesViewModel homeFragmentShoesViewModel;
-    SignUpActivityViewModel signUpActivityViewModel;
-
 
     //Current User
     private BackendlessUser currentGlobalUser = new BackendlessUser();
@@ -83,23 +89,45 @@ public class HomeFragment extends Fragment {
         bestDealsRecyclerViewLoadingView = view.findViewById(R.id.homeFragmentBestDealsRecyclerViewLoadingView);
         bestDealsRecyclerViewIndicator = view.findViewById(R.id.homeFragmentBestDealsRecyclerViewIndicator);
 
-        //create merlin. library used to monitor internet connectivity
+        //create merlin
+        //library used to monitor internet connectivity
         merlinsBeard = MerlinsBeard.from(getActivity());
 
-        //initialize view models
+        //initialize view model
         homeFragmentShoesViewModel = ViewModelProviders.of(this).get(HomeFragmentShoesViewModel.class);
         homeFragmentShoesViewModel.init();
-        signUpActivityViewModel = ViewModelProviders.of(this).get(SignUpActivityViewModel.class);
-        signUpActivityViewModel.init();
+
+        // //delay the display of soft keyboard until the user ties to input details into the filters
+        //        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         //initialize recycler view
         bestDealsRecyclerView = view.findViewById(R.id.homeFragmentBestDealsRecyclerView);
         bestDealsRecyclerView.setHasFixedSize(true);
         bestDealsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         bestDealsRecyclerViewIndicator.attachToRecyclerView(bestDealsRecyclerView);
+
+        //set on click listener on loading view
+        bestDealsRecyclerViewLoadingView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if(bestDealsLoadFailed){
+
+                    bestDealsRecyclerViewLoadingView.setAnimation(R.raw.refresh);
+                    requestBestDeals();
+
+                }
+
+
+
+            }
+        });
+
         //set snap helper to recycler view
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(bestDealsRecyclerView);
+
         //remove the indicator and the recycler view while the data request is made
         bestDealsRecyclerView.setVisibility(View.GONE);
         bestDealsRecyclerViewIndicator.setVisibility(View.GONE);
@@ -109,194 +137,80 @@ public class HomeFragment extends Fragment {
         bestDealsFastAdapter = FastAdapter.with(bestDealsItemAdapter);
 
 
-        //set on click listener on loading view
-        bestDealsRecyclerViewLoadingView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                if (bestDealsLoadFailed) {
-
-
-                    bestDealsRecyclerViewLoadingView.setAnimation(R.raw.refresh);
-                    bestDealsRecyclerViewLoadingView.playAnimation();
-
-                    if (merlinsBeard.isConnected()){
-
-                        reloadBestDeals();
-
-                    }else {
-
-                        Toast.makeText(getActivity(),"We can't seem to find the internet connection",Toast.LENGTH_LONG).show();
-                        bestDealsLoadFailed = true;
-                        bestDealsRecyclerViewLoadingView.setAnimation(R.raw.shopping_bag_error);
-                        bestDealsRecyclerViewLoadingView.playAnimation();
-                    }
-
-
-
-
-
-                }
-
-
-            }
-        });
-
-
         //TODO SAVE TAGS IN CACHE
 
 
-        if (merlinsBeard.isConnected()){
-
-            requestCurrentUser();
-        }else {
-
-            Toast.makeText(getActivity(),"We can't seem to find the internet connection",Toast.LENGTH_LONG).show();
-            bestDealsLoadFailed = true;
-            bestDealsRecyclerViewLoadingView.setAnimation(R.raw.shopping_bag_error);
-            bestDealsRecyclerViewLoadingView.playAnimation();
-
-        }
-
-
-
+        requestBestDeals();
 
 
         return view;
     }
 
 
-    private void requestCurrentUser() {
-
-        //todo change the name of the method to something more appropriate
 
 
-        signUpActivityViewModel.checkIfUserLoginIsValid();
-
-        signUpActivityViewModel.getIsValidLoginCheckResult().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-
-                if (aBoolean) {
-
-                    signUpActivityViewModel.getIsValidLoginCheckResponse().observe(getActivity(), new Observer<Boolean>() {
-                        @Override
-                        public void onChanged(Boolean aBoolean) {
-
-                            if (aBoolean) {
-
-                                signUpActivityViewModel.retrieveCurrentUserFromTheInternet();
-                                signUpActivityViewModel.getRetrieveCurrentUserFromTheInternetResult().observe(getActivity(), new Observer<Boolean>() {
-                                    @Override
-                                    public void onChanged(Boolean aBoolean) {
-
-                                        if (aBoolean) {
-
-                                            signUpActivityViewModel.getRetrieveCurrentUserFromTheInternetResponse().observe(getActivity(), new Observer<BackendlessUser>() {
-                                                @Override
-                                                public void onChanged(BackendlessUser user) {
-
-                                                    if (user != null) {
-
-                                                        //todo use the backendless user response
-                                                        currentGlobalUser = user;
-                                                        requestInitialBestDeals(user);
-                                                        Log.d("MyLogsUser", "Home Fragment: current logged in user retrieved from internet. User details: " + user.toString());
-
-                                                    } else {
-
-                                                        //the operation to retrieve the current user was successful but no user object was returned
-                                                        requestInitialBestDeals(null);
-                                                        Log.d("MyLogsUser", "Home Fragment: the operation to retrieve the current user was successful but no user object was returned");
 
 
-                                                    }
 
-                                                }
-                                            });
+    private void requestBestDeals1(){
 
-                                        } else {
-
-                                            //the operation to retrieve the current user failed
-                                            requestInitialBestDeals(null);
-                                            Log.d("MyLogsUser", "Home Fragment: the operation to retrieve the current user failed");
-
-                                        }
+        //todo get the user
+        //todo get newest items
 
 
-                                    }
-                                });
 
 
-                            } else {
-
-                                //the server has replied that there is no valid login session
-
-                                requestInitialBestDeals(null);
-                                Log.d("MyLogsUser", "Home Fragment: there is no valid login!");
-
-                            }
-
-                        }
-                    });
 
 
-                }else{
 
-                    //there is an error and the valid login check request failed
-                    Log.d("MyLogsUser", "Home Fragment: there is an error and the valid login check request failed!");
 
-                }
-
-            }
-        });
 
 
     }
 
 
-    private void requestInitialBestDeals(BackendlessUser user) {
+
+
+
+
+    private void requestBestDeals() {
+
+
+        currentGlobalUser = MainActivity.currentLoggedInBackendlessUser;
+
 
         Integer genderInt = 1;
 
-        if (user != null) {
-            genderInt = (Integer) user.getProperty("gender");
+        if (currentGlobalUser != null) {
+            genderInt = (Integer) currentGlobalUser.getProperty("gender");
             //2 = male, 3= female, 1= none
+        } else {
 
-            if (genderInt != null) {
+            Log.d("MyLogsHomeFrag", "failed to retrieve gender int, step one");
 
-                if (genderInt == 1) {
-                    //no gender
-                    String whereClause = "gender = '1'";
+        }
 
-                    getBestDealItems(whereClause);
+        if (genderInt != null) {
 
-
-                } else if (genderInt == 2) {
-
-                    //men
-                    String whereClause = "gender = '2'";
-                    getBestDealItems(whereClause);
-
-
-                } else if (genderInt == 3) {
-
-                    //women
-                    String whereClause = "gender = '3'";
-                    getBestDealItems(whereClause);
-
-
-                }
-
-
-            } else {
-
-
-                String whereClause = "gender = '1'";
+            if (genderInt == 1) {
+                //no gender
+                String whereClause = "name = 'Best deals'";
 
                 getBestDealItems(whereClause);
-                Log.d("MyLogsHomeFrag", "failed to retrieve gender int, step two, User may be NULL");
+
+
+            } else if (genderInt == 2) {
+
+                //men
+                String whereClause = "name = 'Men'";
+                getBestDealItems(whereClause);
+
+
+            } else if (genderInt == 3) {
+
+                //women
+                String whereClause = "name = 'Women'";
+                getBestDealItems(whereClause);
 
 
             }
@@ -304,11 +218,9 @@ public class HomeFragment extends Fragment {
 
         } else {
 
-            String whereClause = "gender = '1'";
+            Log.d("MyLogsHomeFrag", "failed to retrieve gender int, step two");
 
-            getBestDealItems(whereClause);
 
-            Log.d("MyLogsHomeFrag", "The user is NULL");
         }
 
 
@@ -347,53 +259,75 @@ public class HomeFragment extends Fragment {
 
     }
 
-
     private void getBestDealItems(String whereClause) {
 
-        String thisSortBy = "created%20desc";
-        homeFragmentShoesViewModel.requestBestDeals(whereClause, thisSortBy);
-        homeFragmentShoesViewModel.getBestDealsRequestResult().observe(getActivity(), new Observer<Boolean>() {
+
+        homeFragmentShoesViewModel.requestSpecificTags(whereClause);
+
+        homeFragmentShoesViewModel.getSpecificTagsRequestResult().observe(getActivity(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
 
                 if (aBoolean) {
-                    homeFragmentShoesViewModel.getBestDealsResponse().observe(getActivity(), new Observer<List<Map>>() {
-                        @Override
-                        public void onChanged(List<Map> maps) {
 
-                            if (maps != null) {
-                                bestDealsRecyclerView.setAdapter(bestDealsFastAdapter);
-                                bestDealsItemAdapter.add(createShoeObjects(maps));
-                                bestDealsRecyclerViewLoadingView.pauseAnimation();
-                                bestDealsRecyclerViewLoadingView.setVisibility(View.GONE);
-                                bestDealsRecyclerView.setVisibility(View.VISIBLE);
-                                bestDealsRecyclerViewIndicator.setVisibility(View.VISIBLE);
-                                bestDealsLoadFailed = false;
-                            }
+                    if (homeFragmentShoesViewModel.getSpecificTagsResponse().getValue() != null) {
+                        String tagId = (String) homeFragmentShoesViewModel.getSpecificTagsResponse().getValue().get(0).get("objectId");
 
+                        if (tagId != null) {
+
+                            String thisWhereClause = "tags='" + tagId + "'";
+                            String thisSortBy = "price%20asc";
+                            homeFragmentShoesViewModel.requestBestDeals(thisWhereClause, thisSortBy);
+
+                            homeFragmentShoesViewModel.getBestDealsRequestResult().observe(getActivity(), new Observer<Boolean>() {
+                                @Override
+                                public void onChanged(Boolean aBoolean) {
+
+                                    if (aBoolean) {
+                                        homeFragmentShoesViewModel.getBestDealsResponse().observe(getActivity(), new Observer<List<Map>>() {
+                                            @Override
+                                            public void onChanged(List<Map> maps) {
+
+                                                if (maps != null) {
+                                                    bestDealsRecyclerView.setAdapter(bestDealsFastAdapter);
+                                                    bestDealsItemAdapter.add(createShoeObjects(maps));
+                                                    bestDealsRecyclerViewLoadingView.pauseAnimation();
+                                                    bestDealsRecyclerViewLoadingView.setVisibility(View.GONE);
+                                                    bestDealsRecyclerView.setVisibility(View.VISIBLE);
+                                                    bestDealsRecyclerViewIndicator.setVisibility(View.VISIBLE);
+                                                    bestDealsLoadFailed = false;
+                                                }
+
+                                            }
+                                        });
+                                    }else{
+
+
+                                        bestDealsLoadFailed = true;
+                                        bestDealsRecyclerViewLoadingView.setAnimation(R.raw.shopping_bag_error);
+
+
+
+                                    }
+
+
+                                }
+                            });
+
+
+                        } else {
+                            Log.d("MyLogsHomeFrag", "Tag id = null");
                         }
-                    });
-                } else {
 
 
-                    bestDealsLoadFailed = true;
-                    bestDealsRecyclerViewLoadingView.setAnimation(R.raw.shopping_bag_error);
-                    bestDealsRecyclerViewLoadingView.playAnimation();
+                    }
 
 
                 }
 
-
             }
         });
 
-
-    }
-
-
-    private void reloadBestDeals(){
-
-        requestInitialBestDeals(currentGlobalUser);
 
     }
 
@@ -1319,3 +1253,104 @@ public class HomeFragment extends Fragment {
 
 
 */
+
+
+
+/*<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    card_view:cardElevation="0dp"
+    app:cardCornerRadius="8dp"
+    android:layout_margin="6dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageView
+            android:id="@+id/homeFragmentBestDealsImgView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/rounded_rect_8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/homeFragmentBestDealsPriceTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/quicksand_bold"
+            android:text="$86"
+            android:textColor="#7E7A7A"
+            android:textSize="15sp"
+            app:layout_constraintStart_toEndOf="@+id/homeFragmentBestDealsImgView"
+            app:layout_constraintTop_toTopOf="@+id/homeFragmentBestDealsImgView" />
+
+
+        <TextView
+            android:maxLines="2"
+            android:id="@+id/homeFragmentBestDealsTitleTV"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/quicksand_light"
+            android:text="Jordan Air Ones' Kendrick Drake zorb"
+            android:textColor="#000"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/homeFragmentBestDealsImgView"
+            app:layout_constraintTop_toBottomOf="@+id/homeFragmentBestDealsPriceTV" />
+
+
+
+        <ImageView
+            android:id="@+id/homeFragmentBestDealsCartImgView"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/shopping_bag_black_ios"
+            app:layout_constraintStart_toEndOf="@+id/homeFragmentBestDealsImgView"
+            app:layout_constraintBottom_toBottomOf="@+id/homeFragmentBestDealsImgView" />
+
+
+
+        <TextView
+            android:textAlignment="center"
+            android:padding="3dp"
+            android:background="@drawable/rounded_rect_8dp"
+            android:maxLines="1"
+            android:id="@+id/homeFragmentBestDealsAddToCartTV"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="10dp"
+
+            android:fontFamily="@font/quicksand_light"
+            android:text="Add to cart"
+            android:textColor="#7E7A7A"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/homeFragmentBestDealsCartImgView"
+            app:layout_constraintBottom_toBottomOf="@+id/homeFragmentBestDealsCartImgView" />
+
+
+
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>*/

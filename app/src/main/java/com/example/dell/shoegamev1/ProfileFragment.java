@@ -8,13 +8,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.backendless.Backendless;
 import com.backendless.BackendlessUser;
+import com.example.dell.shoegamev1.viewmodels.HomeFragmentShoesViewModel;
+import com.example.dell.shoegamev1.viewmodels.SignUpActivityViewModel;
+import com.novoda.merlin.MerlinsBeard;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 public class ProfileFragment extends Fragment {
 
@@ -23,6 +29,22 @@ public class ProfileFragment extends Fragment {
     // private TextView signUpTextView, logInTextView, cartTV, faqTV, trackingTV, ordersTv, savedTv, editProfileTv, supportTv, aboutTv;
     private ConstraintLayout signUpLayout, logInLayout, cartLayout, faqLayout, trackingLayout, ordersLayout, savedLayout, editProfileLayout, supportLayout, aboutLayout;
     private ConstraintLayout logOutLayout, deleteAccountLayout, paymentMethodsLayout;
+    private TextView helpHeaderTV,accountHeaderTV,personalHeaderTV;
+    private LottieAnimationView loadingView;
+
+
+
+    //ViewModel
+    HomeFragmentShoesViewModel homeFragmentShoesViewModel;
+    SignUpActivityViewModel signUpActivityViewModel;
+
+
+    //Current User
+    private BackendlessUser currentGlobalUser = new BackendlessUser();
+
+    //merlin
+    private MerlinsBeard merlinsBeard;
+
 
     @Nullable
     @Override
@@ -32,6 +54,10 @@ public class ProfileFragment extends Fragment {
 
 
         //initialize the views
+        loadingView = view.findViewById(R.id.profileFragmentAnimationView);
+        personalHeaderTV = view.findViewById(R.id.profileFragmentPersonalHeaderTV);
+        helpHeaderTV = view.findViewById(R.id.profileFragmentHelpHeaderTV);
+        accountHeaderTV = view.findViewById(R.id.profileFragmentAccountHeaderTV);
         helloUserTextView = view.findViewById(R.id.profileFragmentHelloUserTV);
         cartLayout = view.findViewById(R.id.profileFragmentCartLayout);
         trackingLayout = view.findViewById(R.id.profileFragmentTrackingLayout);
@@ -46,6 +72,25 @@ public class ProfileFragment extends Fragment {
         logInLayout = view.findViewById(R.id.profileFragmentLogInLayout);
         logOutLayout = view.findViewById(R.id.profileFragmentLogOutLayout);
         deleteAccountLayout = view.findViewById(R.id.profileFragmentDeleteAccountLayout);
+
+
+
+
+
+        //create merlin. library used to monitor internet connectivity
+        merlinsBeard = MerlinsBeard.from(getActivity());
+
+        //initialize view models
+        signUpActivityViewModel = ViewModelProviders.of(this).get(SignUpActivityViewModel.class);
+        signUpActivityViewModel.init();
+
+
+
+
+
+
+
+
 
         //set whether views are visible depending on user logged in status
         if (MainActivity.IsValidLogin) {
@@ -93,6 +138,46 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
+
+
+
+
+
+
+
+    private void getCurrentUser(){
+
+        signUpActivityViewModel.checkIfUserLoginIsValid();
+        signUpActivityViewModel.getIsValidLoginCheckResult().observe(getActivity(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+
+                if(aBoolean){
+
+                    signUpActivityViewModel.getIsValidLoginCheckResponse().observe(getActivity(), new Observer<Boolean>() {
+                        @Override
+                        public void onChanged(Boolean aBoolean) {
+
+                            //todo this is where you stopped
+
+
+                        }
+                    });
+
+                }
+
+            }
+        });
+
+    }
+
+
+
+
+
+
+
+
 
 
 }
